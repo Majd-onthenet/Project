@@ -23,6 +23,8 @@
 ## Step 0: download dataset into working directory with subdirectory as "UCI HAR Dataset"
 ## its corresponding subdirectories
 
+
+
 ## Step 1: Merge the training and test sets to create one data set
 
 x_train <- read.table("UCI HAR Dataset/train/X_train.txt")
@@ -38,15 +40,17 @@ y_data <- rbind(y_train, y_test)
 subject_data <- rbind(subject_train, subject_test)
 
 
+
 ## Step 2: Extract only the measurements on the mean and standard deviation for each measurement
 
 features <- read.table("UCI HAR Dataset/features.txt")
 
 ## get only columns with mean() or std() in their names
-mean_and_std_features <- grep("-(mean|std)\\(\\)", features[, 2]) 
+mean_and_std_features <- grep("(mean|std)\\(\\)", features[, 2]) 
 
 x_data <- x_data[, mean_and_std_features] ## subset the desired columns
 names(x_data) <- features[mean_and_std_features, 2] ## correct the column names
+
 
 
 ## Step 3: Use descriptive activity names to name the activities in the data set
@@ -63,14 +67,16 @@ names(y_data) <- "activity" ## correct column name
 
 names(subject_data) <- "subject" ## correct column name
 
-all_data <- cbind(x_data, y_data, subject_data) ## bind all the data in a single data set
+all_data <- cbind(subject_data, y_data, x_data) ## bind all the data in a single data set
 
 ## Step 5: Create a second, independent tidy data set with the average of each variable
 ## for each activity and each subject
 
 ## 66 <- 68 columns but last two (activity & subject)
 library(plyr)
-averages_data <- ddply(all_data, .(subject, activity), function(x) colMeans(x[, 1:66]))
+tidy_data <- ddply(all_data, .(subject, activity), function(x) colMeans(x[, 1:66]))
 
-
+## Step 6: Write to file
+write.table(tidy_data, "tidydata.txt", row.names=FALSE) 
 write.table(averages_data, "averages_data.txt", row.name=FALSE)
+
