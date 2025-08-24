@@ -15,9 +15,9 @@ x_test <- read.table("UCI HAR Dataset/test/X_test.txt")
 y_test <- read.table("UCI HAR Dataset/test/y_test.txt")
 subject_test <- read.table("UCI HAR Dataset/test/subject_test.txt")
 
-x_data <- rbind(x_train, x_test) ## create 'x' data set
-y_data <- rbind(y_train, y_test) ## create 'y' data set
-subject_data <- rbind(subject_train, subject_test) ## create 'subject' data set
+x_data <- rbind(x_train, x_test)
+y_data <- rbind(y_train, y_test)
+subject_data <- rbind(subject_train, subject_test)
 
 
 ## Step 2: Extract only the measurements on the mean and standard deviation for each measurement
@@ -25,7 +25,7 @@ subject_data <- rbind(subject_train, subject_test) ## create 'subject' data set
 features <- read.table("UCI HAR Dataset/features.txt")
 
 ## get only columns with mean() or std() in their names
-mean_and_std_features <- grep("-(mean|std)\\(\\)", features[, 2]) 
+mean_and_std_features <- grep("(mean|std)\\(\\)", features[, 2]) 
 
 x_data <- x_data[, mean_and_std_features] ## subset the desired columns
 names(x_data) <- features[mean_and_std_features, 2] ## correct the column names
@@ -52,6 +52,7 @@ all_data <- cbind(x_data, y_data, subject_data) ## bind all the data in a single
 
 ## 66 <- 68 columns but last two (activity & subject)
 library(plyr)
-averages_data <- ddply(all_data, .(subject, activity), function(x) colMeans(x[, 1:66]))
+tidy_data <- ddply(all_data, .(subject, activity), function(x) colMeans(x[, 1:66]))
 
-write.table(averages_data, "averages_data.txt", row.name=FALSE)
+write.table(tidy_data, "tidydata.txt", row.name=FALSE)
+
